@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Functions and Scope</title>
+<style>
+  :root {
+    --navy: #0d1b2a;
+    --blue: #1b4f72;
+    --accent: #2e86c1;
+    --light-blue: #d6eaf8;
+    --white: #ffffff;
+    --off-white: #f4f8fb;
+    --text: #1a1a2e;
+    --muted: #5d6d7e;
+    --border: #d0dce8;
+    --code-bg: #0d1b2a;
+    --code-text: #7ec8e3;
+    --green: #1e8449;
+    --red: #c0392b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    background: var(--off-white);
+    color: var(--text);
+    line-height: 1.75;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--navy);
+    color: var(--white);
+    padding: 48px 0 36px;
+    text-align: center;
+    border-bottom: 4px solid var(--accent);
+  }
+  header .badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--white);
+    font-size: 12px;
+    font-family: 'Times New Roman', serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 18px;
+    border-radius: 2px;
+    margin-bottom: 18px;
+  }
+  header h1 {
+    font-size: clamp(26px, 4vw, 44px);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  header p {
+    color: #a8bfd0;
+    font-size: 16px;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* NAV */
+  nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  }
+  nav ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  nav ul li a {
+    display: block;
+    padding: 14px 18px;
+    color: var(--blue);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border-bottom: 3px solid transparent;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  nav ul li a:hover {
+    border-bottom-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* MAIN */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* SECTION */
+  section {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 36px 40px;
+    margin-bottom: 32px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+  }
+
+  .section-label {
+    display: inline-block;
+    background: var(--light-blue);
+    color: var(--blue);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-bottom: 12px;
+  }
+
+  h2 {
+    font-size: 24px;
+    color: var(--navy);
+    font-weight: 700;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--light-blue);
+  }
+
+  h3 {
+    font-size: 18px;
+    color: var(--blue);
+    font-weight: 700;
+    margin: 28px 0 10px;
+  }
+
+  h4 {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 20px 0 8px;
+  }
+
+  p { margin-bottom: 14px; font-size: 15.5px; color: #2c3e50; }
+
+  /* DEFINITION BOX */
+  .def-box {
+    background: var(--off-white);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    padding: 16px 20px;
+    margin: 18px 0;
+    font-size: 15px;
+  }
+
+  /* TRAITS */
+  .traits {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .trait-item {
+    background: var(--off-white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: var(--text);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .trait-item::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    min-width: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin-top: 7px;
+  }
+
+  /* CODE */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    overflow-x: auto;
+  }
+  .code-block pre {
+    color: var(--code-text);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13.5px;
+    line-height: 1.7;
+    white-space: pre;
+  }
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .str { color: #c3e88d; }
+  .num { color: #f78c6c; }
+  .cmt { color: #546e7a; }
+  .out-label {
+    display: inline-block;
+    background: #1a2a1a;
+    color: #7ec87e;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 2px;
+    margin-top: 12px;
+    margin-bottom: 4px;
+  }
+
+  /* TYPES TABLE */
+  .types-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14.5px;
+  }
+  .types-table thead tr {
+    background: var(--navy);
+    color: var(--white);
+  }
+  .types-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .types-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .types-table tbody tr:nth-child(even) { background: var(--off-white); }
+  .types-table tbody tr:hover { background: var(--light-blue); }
+
+  /* SCOPE DIAGRAM */
+  .scope-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 20px 0;
+  }
+  .scope-level {
+    padding: 16px 24px;
+    border-radius: 0;
+    font-size: 14.5px;
+    border: 2px solid transparent;
+    position: relative;
+  }
+  .scope-level:first-child { border-radius: 6px 6px 0 0; }
+  .scope-level:last-child { border-radius: 0 0 6px 6px; }
+  .scope-b { background: #e8f0fe; border-color: #4a6fa5; }
+  .scope-g { background: #e6f4ea; border-color: #2e7d32; }
+  .scope-e { background: #fff8e1; border-color: #f9a825; }
+  .scope-l { background: #fce4ec; border-color: #c62828; }
+  .scope-level strong { display: block; font-size: 15px; margin-bottom: 3px; }
+  .scope-level span { color: var(--muted); font-size: 13.5px; }
+  .scope-arrow {
+    text-align: center;
+    font-size: 22px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  /* HIGHLIGHT BOX */
+  .highlight-box {
+    background: #eaf4ff;
+    border: 1.5px solid #aad4f5;
+    border-radius: 5px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 14.5px;
+  }
+  .highlight-box strong { color: var(--navy); }
+
+  /* QUIZ SECTION */
+  #quiz {
+    background: var(--navy);
+    border: none;
+    color: var(--white);
+    padding: 40px;
+  }
+  #quiz h2 {
+    color: var(--white);
+    border-bottom-color: var(--accent);
+    font-size: 26px;
+  }
+  #quiz .section-label {
+    background: var(--accent);
+    color: var(--white);
+  }
+
+  /* Progress bar */
+  .quiz-top-bar {
+    margin-bottom: 24px;
+  }
+  .quiz-progress-wrap {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    height: 6px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .quiz-progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .quiz-progress-text {
+    font-size: 13px;
+    color: #a8bfd0;
+    text-align: right;
+  }
+
+  /* Slide viewport */
+  .slide-viewport {
+    overflow: hidden;
+    border-radius: 8px;
+    position: relative;
+  }
+  .slide-track {
+    display: flex;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+  }
+  .slide-card {
+    min-width: 100%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 32px 28px;
+    box-sizing: border-box;
+  }
+  .slide-card.correct { border-color: #27ae60; background: rgba(39,174,96,0.08); }
+  .slide-card.incorrect { border-color: #e74c3c; background: rgba(231,76,60,0.08); }
+
+  .q-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .q-text {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 24px;
+    line-height: 1.55;
+  }
+
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .option-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 6px;
+    padding: 14px 16px;
+    color: #c8d8e8;
+    font-size: 14.5px;
+    font-family: 'Times New Roman', serif;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.18s;
+    line-height: 1.4;
+  }
+  .option-btn:hover:not(:disabled) {
+    background: rgba(46,134,193,0.3);
+    border-color: var(--accent);
+    color: var(--white);
+    transform: translateY(-1px);
+  }
+  .option-btn.selected-correct {
+    background: rgba(39,174,96,0.25);
+    border-color: #27ae60;
+    color: #7dcea0;
+  }
+  .option-btn.selected-wrong {
+    background: rgba(231,76,60,0.2);
+    border-color: #e74c3c;
+    color: #f1948a;
+  }
+  .option-btn.show-correct {
+    background: rgba(39,174,96,0.15);
+    border-color: #27ae60;
+    color: #7dcea0;
+  }
+  .option-btn:disabled { cursor: default; transform: none; }
+
+  .q-feedback {
+    margin-top: 16px;
+    font-size: 14px;
+    padding: 11px 16px;
+    border-radius: 5px;
+    display: none;
+  }
+  .q-feedback.show { display: block; }
+  .q-feedback.correct-fb { background: rgba(39,174,96,0.15); color: #7dcea0; border: 1px solid #27ae60; }
+  .q-feedback.wrong-fb { background: rgba(231,76,60,0.12); color: #f1948a; border: 1px solid #e74c3c; }
+
+  /* Slide nav */
+  .slide-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 12px;
+  }
+  .nav-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.2);
+    color: var(--white);
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-family: 'Times New Roman', serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s;
+    min-width: 90px;
+  }
+  .nav-btn:hover:not(:disabled) {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .nav-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .dot-row {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .dot.active { background: var(--accent); transform: scale(1.3); }
+  .dot.answered-dot { background: #5dade2; }
+  .dot.correct-dot { background: #27ae60; }
+  .dot.wrong-dot { background: #e74c3c; }
+
+  /* Footer bar */
+  .quiz-footer-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .btn-refresh {
+    background: transparent;
+    color: #a8bfd0;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 9px 18px;
+    border-radius: 4px;
+    font-size: 13.5px;
+    font-family: 'Times New Roman', serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-refresh:hover { background: rgba(255,255,255,0.08); color: var(--white); }
+  .answered-count {
+    font-size: 13px;
+    color: #a8bfd0;
+  }
+
+  .quiz-submit {
+    text-align: center;
+    margin-top: 24px;
+  }
+  .btn-submit {
+    background: var(--accent);
+    color: var(--white);
+    border: none;
+    padding: 14px 44px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-family: 'Times New Roman', serif;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+  }
+  .btn-submit:hover { background: #1a6ea8; }
+
+  .quiz-result {
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid var(--accent);
+    border-radius: 6px;
+    padding: 32px;
+    text-align: center;
+    margin-top: 28px;
+    display: none;
+  }
+  .quiz-result.show { display: block; }
+  .result-score {
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .result-label { font-size: 16px; color: #a8bfd0; margin-bottom: 16px; }
+  .result-msg { font-size: 15px; color: var(--white); }
+
+  /* FOOTER */
+  footer {
+    background: var(--navy);
+    color: #5d7a8c;
+    text-align: center;
+    padding: 24px;
+    font-size: 13px;
+    border-top: 1px solid #1e3a52;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    section { padding: 24px 20px; }
+    .traits { grid-template-columns: 1fr; }
+    .options { grid-template-columns: 1fr; }
+    nav ul li a { padding: 12px 10px; font-size: 12px; }
+    #quiz { padding: 28px 20px; }
+    .slide-card { padding: 24px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Day 8 Python</div>
+  <h1>Python Functions and Scope</h1>
+  <p>Parameters, Arguments, Variable Types and Scope Rules</p>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="#params-args">Parameters vs Arguments</a></li>
+    <li><a href="#arg-types">Argument Types</a></li>
+    <li><a href="#scope">Scope of Variables</a></li>
+    <li><a href="#legb">LEGB Rule</a></li>
+    <li><a href="#quiz">Quiz</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- SECTION 1: Parameters vs Arguments -->
+  <section id="params-args">
+    <span class="section-label">Concept 1</span>
+    <h2>Parameters vs Arguments</h2>
+
+    <p>Although the terms parameter and argument are often used interchangeably, they refer to different concepts in Python function programming.</p>
+
+    <h3>1. Parameters</h3>
+    <div class="def-box">
+      A parameter is a variable specified in a function definition. Parameters define the inputs that a function expects to receive when it is called.
+    </div>
+
+    <h4>Characteristics of Parameters</h4>
+    <div class="traits">
+      <div class="trait-item">Declared in the function header</div>
+      <div class="trait-item">Act as placeholders for incoming values</div>
+      <div class="trait-item">Exist only within the function scope</div>
+      <div class="trait-item">Determine the number and type of inputs a function can accept</div>
+    </div>
+
+    <h4>Example</h4>
+    <div class="code-block"><pre><span class="kw">def</span> <span class="fn">calculate_area</span>(length, width):
+    <span class="kw">return</span> length * width</pre></div>
+    <p>Here, <strong>length</strong> and <strong>width</strong> are parameters.</p>
+
+    <h3>2. Arguments</h3>
+    <div class="def-box">
+      An argument is the actual value provided to a function when it is invoked.
+    </div>
+
+    <h4>Characteristics of Arguments</h4>
+    <div class="traits">
+      <div class="trait-item">Supplied during the function call</div>
+      <div class="trait-item">Assigned to the corresponding parameters</div>
+      <div class="trait-item">Can be literals, variables, expressions, or objects</div>
+      <div class="trait-item">Provide the data that the function processes</div>
+    </div>
+
+    <h4>Example</h4>
+    <div class="code-block"><pre>calculate_area(<span class="num">10</span>, <span class="num">5</span>)
+<span class="cmt"># 10 is assigned to parameter length</span>
+<span class="cmt"># 5 is assigned to parameter width</span></pre></div>
+    <p>In this call, <strong>10</strong> and <strong>5</strong> are arguments.</p>
+  </section>
+
+  <!-- SECTION 2: Argument Types -->
+  <section id="arg-types">
+    <span class="section-label">Concept 2</span>
+    <h2>Types of Arguments in Python</h2>
+
+    <p>Python supports several types of arguments, allowing functions to be called in flexible ways.</p>
+
+    <table class="types-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Positional Arguments</td><td>Assigned based on position in the function call</td></tr>
+        <tr><td>2</td><td>Keyword Arguments</td><td>Passed using parameter names, order does not matter</td></tr>
+        <tr><td>3</td><td>Default Arguments</td><td>Parameter has a preset value when no argument is provided</td></tr>
+        <tr><td>4</td><td>Variable-Length Positional (*args)</td><td>Accepts multiple positional arguments as a tuple</td></tr>
+        <tr><td>5</td><td>Variable-Length Keyword (**kwargs)</td><td>Accepts any number of keyword arguments as a dictionary</td></tr>
+      </tbody>
+    </table>
+
+    <h3>1. Positional Arguments</h3>
+    <p>Positional arguments are assigned to parameters based on their position in the function call. The order of arguments must match the order of parameters.</p>
+    <div class="code-block"><pre><span class="kw">def</span> <span class="fn">student</span>(name, age):
+    <span class="fn">print</span>(<span class="str">"Name:"</span>, name)
+    <span class="fn">print</span>(<span class="str">"Age:"</span>, age)
+
+student(<span class="str">"Rahul"</span>, <span class="num">20</span>)
+<div class="out-label">Output</div>
+Name: Rahul
+Age: 20</pre></div>
+
+    <h3>2. Keyword Arguments</h3>
+    <p>Keyword arguments are passed using parameter names. Order does not matter, which improves code readability.</p>
+    <div class="code-block"><pre><span class="kw">def</span> <span class="fn">student</span>(name, age):
+    <span class="fn">print</span>(<span class="str">"Name:"</span>, name)
+    <span class="fn">print</span>(<span class="str">"Age:"</span>, age)
+
+student(age=<span class="num">20</span>, name=<span class="str">"Rahul"</span>)
+<div class="out-label">Output</div>
+Name: Rahul
+Age: 20</pre></div>
+
+    <h3>3. Default Arguments</h3>
+    <p>A parameter can be assigned a default value. If no argument is provided, the default value is used.</p>
+    <div class="code-block"><pre><span class="kw">def</span> <span class="fn">greet</span>(name, message=<span class="str">"Welcome"</span>):
+    <span class="fn">print</span>(message, name)
+
+greet(<span class="str">"Rahul"</span>)
+<div class="out-label">Output</div>
+Welcome Rahul
+
+greet(<span class="str">"Rahul"</span>, <span class="str">"Good Morning"</span>)
+<div class="out-label">Output</div>
+Good Morning Rahul</pre></div>
+
+    <div class="traits">
+      <div class="trait-item">Makes parameters optional</div>
+      <div class="trait-item">Reduces the number of required arguments</div>
+    </div>
+
+    <h3>4. Variable-Length Arguments (*args)</h3>
+    <p>When the number of arguments is unknown, Python provides *args to accept multiple positional arguments. Internally, they are stored as a tuple.</p>
+    <div class="code-block"><pre><span class="kw">def</span> <span class="fn">add</span>(*numbers):
+    total = <span class="fn">sum</span>(numbers)
+    <span class="fn">print</span>(total)
+
+add(<span class="num">10</span>, <span class="num">20</span>)
+add(<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>)
+<div class="out-label">Output</div>
+30
+100</pre></div>
+    <div class="highlight-box"><strong>How it works:</strong> When you call add(10, 20, 30), Python stores them internally as numbers = (10, 20, 30). *args stores arguments as a tuple.</div>
+
+    <h3>5. Variable-Length Keyword Arguments (**kwargs)</h3>
+    <p>**kwargs allows a function to accept any number of keyword arguments. Internally, they are stored as a dictionary.</p>
+    <div class="code-block"><pre><span class="kw">def</span> <span class="fn">student_info</span>(**details):
+    <span class="fn">print</span>(details)
+
+student_info(name=<span class="str">"Rahul"</span>, age=<span class="num">20</span>, city=<span class="str">"Hyderabad"</span>)
+<div class="out-label">Output</div>
+{'name': 'Rahul', 'age': 20, 'city': 'Hyderabad'}</pre></div>
+    <div class="highlight-box"><strong>How it works:</strong> The keyword arguments are stored as a dictionary: details = {'name': 'Rahul', 'age': 20, 'city': 'Hyderabad'}</div>
+  </section>
+
+  <!-- SECTION 3: Scope -->
+  <section id="scope">
+    <span class="section-label">Concept 3</span>
+    <h2>Scope of Variables</h2>
+
+    <p>Scope refers to the area of a program where a variable can be accessed or used. In simple terms, scope determines where a variable is visible and available in your code.</p>
+    <p>Every variable in Python has a scope, and Python uses scope rules to decide which variable to use when the same name appears in different places.</p>
+
+    <div class="highlight-box">
+      <strong>Why Understanding Scope Matters</strong><br>
+      It controls the visibility of variables, prevents naming conflicts, improves code organization and readability, and helps manage memory efficiently.
+    </div>
+
+    <h3>1. Local Scope</h3>
+    <p>A variable created inside a function is called a local variable. Its scope is limited to that function only. Once the function finishes execution, the local variable is destroyed.</p>
+
+    <h3>2. Global Scope</h3>
+    <p>A variable defined outside all functions is called a global variable. Global variables can be accessed from anywhere in the program.</p>
+    <p>To modify a global variable inside a function, use the <strong>global</strong> keyword.</p>
+
+    <div class="traits">
+      <div class="trait-item">Defined outside functions</div>
+      <div class="trait-item">Accessible throughout the program</div>
+      <div class="trait-item">Remains in memory during program execution</div>
+      <div class="trait-item">Use global keyword to modify inside a function</div>
+    </div>
+
+    <h3>3. Enclosing Scope</h3>
+    <p>Enclosing scope occurs in nested functions. A variable defined in the outer function can be accessed by the inner function.</p>
+    <p>Here, message belongs to outer(). inner() can access it because it is in the enclosing scope.</p>
+    <p>To modify an enclosing variable, use the <strong>nonlocal</strong> keyword. It tells Python that the variable belongs to the nearest enclosing function, not the local function.</p>
+
+    <h3>4. Built-in Scope</h3>
+    <p>Python provides many predefined functions and objects that are available everywhere. These belong to the built-in scope. No need to define or import them.</p>
+    <div class="traits">
+      <div class="trait-item">print()</div>
+      <div class="trait-item">len()</div>
+      <div class="trait-item">max()</div>
+      <div class="trait-item">min()</div>
+      <div class="trait-item">sum()</div>
+      <div class="trait-item">type()</div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: LEGB -->
+  <section id="legb">
+    <span class="section-label">Concept 4</span>
+    <h2>The LEGB Rule</h2>
+    <p>Python searches for a variable name in the following order. The first match found is used.</p>
+
+    <div class="scope-diagram">
+      <div class="scope-level scope-l">
+        <strong>L — Local</strong>
+        <span>Variables declared inside the current function</span>
+      </div>
+      <div class="scope-arrow">↓</div>
+      <div class="scope-level scope-e">
+        <strong>E — Enclosing</strong>
+        <span>Variables in the enclosing function (for nested functions)</span>
+      </div>
+      <div class="scope-arrow">↓</div>
+      <div class="scope-level scope-g">
+        <strong>G — Global</strong>
+        <span>Variables declared at the top level of the module</span>
+      </div>
+      <div class="scope-arrow">↓</div>
+      <div class="scope-level scope-b">
+        <strong>B — Built-in</strong>
+        <span>Names in the built-in Python namespace (print, len, etc.)</span>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Key Rule:</strong> Python always searches from the innermost scope outward. If a name is found in Local scope, Python does not continue searching further. If no match is found anywhere, a NameError is raised.
+    </div>
+
+    <table class="types-table" style="margin-top:20px">
+      <thead>
+        <tr>
+          <th>Scope</th>
+          <th>Keyword to Modify</th>
+          <th>Lifetime</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Local</td><td>None needed</td><td>During function execution</td></tr>
+        <tr><td>Enclosing</td><td>nonlocal</td><td>During outer function execution</td></tr>
+        <tr><td>Global</td><td>global</td><td>During program execution</td></tr>
+        <tr><td>Built-in</td><td>Not modifiable</td><td>Always available</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- QUIZ SECTION -->
+  <section id="quiz">
+    <span class="section-label">Knowledge Check</span>
+    <h2>Assessment Quiz</h2>
+
+    <div class="quiz-top-bar">
+      <div class="quiz-progress-wrap">
+        <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
+      </div>
+      <div class="quiz-progress-text" id="quiz-progress-text">Question 1 of 8</div>
+    </div>
+
+    <div class="slide-viewport">
+      <div class="slide-track" id="slide-track"></div>
+    </div>
+
+    <div class="slide-nav">
+      <button class="nav-btn" id="btn-prev" onclick="goPrev()" disabled>&#8592; Prev</button>
+      <div class="dot-row" id="dot-row"></div>
+      <button class="nav-btn" id="btn-next" onclick="goNext()">Next &#8594;</button>
+    </div>
+
+    <div class="quiz-submit" id="quiz-submit-wrap" style="display:none">
+      <button class="btn-submit" onclick="submitQuiz()">Submit Answers</button>
+    </div>
+
+    <div class="quiz-footer-bar">
+      <button class="btn-refresh" onclick="refreshQuiz()">&#8635; New Questions</button>
+      <span class="answered-count" id="answered-count">0 of 8 answered</span>
+    </div>
+
+    <div class="quiz-result" id="quiz-result">
+      <div class="result-score" id="result-score"></div>
+      <div class="result-label" id="result-label"></div>
+      <div class="result-msg" id="result-msg"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Python Programming — Day 8 Notes. Parameters, Arguments and Variable Scope.
+</footer>
+
+<script>
+const allQuestions = [
+  {
+    q: "What is a parameter in Python?",
+    options: ["A value passed during function call", "A variable declared in the function definition", "A return value of a function", "A built-in Python keyword"],
+    answer: 1
+  },
+  {
+    q: "What is an argument in Python?",
+    options: ["A placeholder in function definition", "An error raised during execution", "The actual value supplied during function call", "A variable defined outside a function"],
+    answer: 2
+  },
+  {
+    q: "In positional arguments, what must match between arguments and parameters?",
+    options: ["Data type", "Variable name", "Order and position", "Length of value"],
+    answer: 2
+  },
+  {
+    q: "Which type of argument allows you to pass them in any order using names?",
+    options: ["Positional Arguments", "Default Arguments", "Keyword Arguments", "*args"],
+    answer: 2
+  },
+  {
+    q: "What is the default value used if no argument is provided for a parameter with a default?",
+    options: ["None", "Zero", "The value defined in the function header", "An empty string"],
+    answer: 2
+  },
+  {
+    q: "What data structure does *args store arguments in?",
+    options: ["List", "Dictionary", "Set", "Tuple"],
+    answer: 3
+  },
+  {
+    q: "What data structure does **kwargs store arguments in?",
+    options: ["Tuple", "List", "Dictionary", "Set"],
+    answer: 2
+  },
+  {
+    q: "A variable created inside a function belongs to which scope?",
+    options: ["Global Scope", "Built-in Scope", "Enclosing Scope", "Local Scope"],
+    answer: 3
+  },
+  {
+    q: "Which keyword is used to modify a global variable inside a function?",
+    options: ["nonlocal", "global", "extern", "local"],
+    answer: 1
+  },
+  {
+    q: "Which keyword is used to modify a variable from the enclosing function inside a nested function?",
+    options: ["global", "outer", "nonlocal", "enclosing"],
+    answer: 2
+  },
+  {
+    q: "What does LEGB stand for in Python scope resolution?",
+    options: ["Local, External, Global, Basic", "Local, Enclosing, Global, Built-in", "Loop, Enclosing, Global, Built-in", "Local, Enclosing, General, Built-in"],
+    answer: 1
+  },
+  {
+    q: "Which of the following is an example of a built-in function in Python?",
+    options: ["calculate_area()", "greet()", "len()", "student_info()"],
+    answer: 2
+  },
+  {
+    q: "What happens to a local variable after the function finishes execution?",
+    options: ["It becomes global", "It is stored in a dictionary", "It is destroyed", "It remains in memory"],
+    answer: 2
+  },
+  {
+    q: "What is the output of: def greet(name, message='Hello'): print(message, name) --- greet('Rahul')?",
+    options: ["Rahul Hello", "Hello Rahul", "None Rahul", "Error"],
+    answer: 1
+  },
+  {
+    q: "In nested functions, which scope rule allows the inner function to read the outer function's variable?",
+    options: ["Local Scope", "Enclosing Scope", "Global Scope", "Built-in Scope"],
+    answer: 1
+  },
+  {
+    q: "Which argument type is most useful when the number of inputs to a function is unknown?",
+    options: ["Positional Arguments", "Default Arguments", "*args or **kwargs", "Keyword Arguments"],
+    answer: 2
+  },
+  {
+    q: "Global variables in Python are accessible from where?",
+    options: ["Only inside the function where they are declared", "Anywhere in the program", "Only in nested functions", "Only in the main block"],
+    answer: 1
+  },
+  {
+    q: "If Python cannot find a variable name anywhere in the LEGB chain, what happens?",
+    options: ["It returns None", "It creates a new variable", "A NameError is raised", "It uses the built-in default"],
+    answer: 2
+  },
+  {
+    q: "Which of these correctly defines a function with **kwargs?",
+    options: ["def info(*details):", "def info(details={}):", "def info(**details):", "def info(details[]):"],
+    answer: 2
+  },
+  {
+    q: "What is the output of: def add(*n): print(sum(n)) --- add(1, 2, 3, 4)?",
+    options: ["6", "10", "Error", "None"],
+    answer: 1
+  }
+];
+
+let currentQuestions = [];
+let answered = {};
+let currentSlide = 0;
+
+function pickRandom(arr, n) {
+  const shuffled = [...arr].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, n);
+}
+
+function shuffleOptions(q) {
+  const opts = q.options.map((o, i) => ({ text: o, original: i }));
+  opts.sort(() => Math.random() - 0.5);
+  const newAnswer = opts.findIndex(o => o.original === q.answer);
+  return { ...q, options: opts.map(o => o.text), answer: newAnswer };
+}
+
+function buildQuiz() {
+  answered = {};
+  currentSlide = 0;
+  currentQuestions = pickRandom(allQuestions, 8).map(shuffleOptions);
+
+  const track = document.getElementById('slide-track');
+  const dotRow = document.getElementById('dot-row');
+  track.innerHTML = '';
+  dotRow.innerHTML = '';
+  document.getElementById('quiz-result').classList.remove('show');
+  document.getElementById('quiz-submit-wrap').style.display = 'none';
+
+  currentQuestions.forEach((q, qi) => {
+    // Build card
+    const card = document.createElement('div');
+    card.className = 'slide-card';
+    card.id = 'card-' + qi;
+
+    const qNum = document.createElement('div');
+    qNum.className = 'q-num';
+    qNum.textContent = 'Question ' + (qi + 1) + ' of ' + currentQuestions.length;
+
+    const qText = document.createElement('div');
+    qText.className = 'q-text';
+    qText.textContent = q.q;
+
+    const optsDiv = document.createElement('div');
+    optsDiv.className = 'options';
+
+    q.options.forEach((opt, oi) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt;
+      btn.id = 'opt-' + qi + '-' + oi;
+      btn.onclick = () => selectOption(qi, oi);
+      optsDiv.appendChild(btn);
+    });
+
+    const feedback = document.createElement('div');
+    feedback.className = 'q-feedback';
+    feedback.id = 'feedback-' + qi;
+
+    card.appendChild(qNum);
+    card.appendChild(qText);
+    card.appendChild(optsDiv);
+    card.appendChild(feedback);
+    track.appendChild(card);
+
+    // Build dot
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (qi === 0 ? ' active' : '');
+    dot.id = 'dot-' + qi;
+    dot.onclick = () => goToSlide(qi);
+    dotRow.appendChild(dot);
+  });
+
+  updateSlide();
+}
+
+function goToSlide(idx) {
+  currentSlide = idx;
+  updateSlide();
+}
+
+function goPrev() {
+  if (currentSlide > 0) { currentSlide--; updateSlide(); }
+}
+
+function goNext() {
+  if (currentSlide < currentQuestions.length - 1) { currentSlide++; updateSlide(); }
+}
+
+function updateSlide() {
+  const total = currentQuestions.length;
+  const track = document.getElementById('slide-track');
+  track.style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
+
+  // Progress bar
+  document.getElementById('quiz-progress-bar').style.width = ((currentSlide + 1) / total * 100) + '%';
+  document.getElementById('quiz-progress-text').textContent = 'Question ' + (currentSlide + 1) + ' of ' + total;
+
+  // Nav buttons
+  document.getElementById('btn-prev').disabled = currentSlide === 0;
+  const isLast = currentSlide === total - 1;
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.disabled = isLast;
+
+  // Dots
+  for (let i = 0; i < total; i++) {
+    const dot = document.getElementById('dot-' + i);
+    dot.className = 'dot';
+    if (answered[i] !== undefined) {
+      dot.classList.add(answered[i] === currentQuestions[i].answer ? 'correct-dot' : 'wrong-dot');
+    }
+    if (i === currentSlide) dot.classList.add('active');
+  }
+
+  // Answered count
+  const answeredCount = Object.keys(answered).length;
+  document.getElementById('answered-count').textContent = answeredCount + ' of ' + total + ' answered';
+
+  // Show submit when all answered or on last slide and all answered
+  if (answeredCount === total) {
+    document.getElementById('quiz-submit-wrap').style.display = 'block';
+  }
+}
+
+function selectOption(qi, oi) {
+  if (answered[qi] !== undefined) return;
+  answered[qi] = oi;
+
+  const q = currentQuestions[qi];
+  const isCorrect = oi === q.answer;
+  const card = document.getElementById('card-' + qi);
+  const btn = document.getElementById('opt-' + qi + '-' + oi);
+  const feedback = document.getElementById('feedback-' + qi);
+
+  q.options.forEach((_, i) => {
+    document.getElementById('opt-' + qi + '-' + i).disabled = true;
+  });
+
+  if (isCorrect) {
+    btn.classList.add('selected-correct');
+    card.classList.add('correct');
+    feedback.className = 'q-feedback correct-fb show';
+    feedback.textContent = 'Correct! Well done.';
+  } else {
+    btn.classList.add('selected-wrong');
+    card.classList.add('incorrect');
+    document.getElementById('opt-' + qi + '-' + q.answer).classList.add('show-correct');
+    feedback.className = 'q-feedback wrong-fb show';
+    feedback.textContent = 'Incorrect. The correct answer is: ' + q.options[q.answer];
+  }
+
+  updateSlide();
+
+  // Auto advance after 800ms if not last
+  if (currentSlide < currentQuestions.length - 1) {
+    setTimeout(() => { currentSlide++; updateSlide(); }, 900);
+  }
+}
+
+function submitQuiz() {
+  const total = currentQuestions.length;
+  currentQuestions.forEach((q, qi) => {
+    if (answered[qi] === undefined) {
+      answered[qi] = -1;
+      q.options.forEach((_, i) => {
+        document.getElementById('opt-' + qi + '-' + i).disabled = true;
+      });
+      document.getElementById('opt-' + qi + '-' + q.answer).classList.add('show-correct');
+      const feedback = document.getElementById('feedback-' + qi);
+      feedback.className = 'q-feedback wrong-fb show';
+      feedback.textContent = 'Not answered. The correct answer is: ' + q.options[q.answer];
+      document.getElementById('card-' + qi).classList.add('incorrect');
+    }
+  });
+
+  const correct = currentQuestions.filter((q, qi) => answered[qi] === q.answer).length;
+  const pct = Math.round((correct / total) * 100);
+
+  document.getElementById('result-score').textContent = correct + ' / ' + total;
+  document.getElementById('result-label').textContent = pct + '% Score';
+
+  let msg = '';
+  if (pct >= 90) msg = 'Outstanding performance. You have mastered this topic.';
+  else if (pct >= 75) msg = 'Good understanding. Review the highlighted topics to reinforce your knowledge.';
+  else if (pct >= 50) msg = 'Fair performance. Re-read the sections and try again.';
+  else msg = 'Keep studying. Review all sections carefully and try again.';
+
+  document.getElementById('result-msg').textContent = msg;
+  const result = document.getElementById('quiz-result');
+  result.classList.add('show');
+  result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  updateSlide();
+}
+
+function refreshQuiz() {
+  buildQuiz();
+  document.getElementById('quiz').scrollIntoView({ behavior: 'smooth' });
+}
+
+buildQuiz();
+</script>
+</body>
+</html>
